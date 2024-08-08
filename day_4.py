@@ -47,7 +47,7 @@ class MyNet(nn.Module):
     
 class DeepNet(nn.Module):
     def __init__(self):
-        super(MyNet, self).__init__()
+        super(DeepNet, self).__init__()
         self.fc1 = nn.Linear(in_features=input_size, out_features=64, bias=True)
         self.fc2 = nn.Linear(in_features=64, out_features=32, bias=True)
         self.fc3 = nn.Linear(in_features=32, out_features=28, bias=True)
@@ -67,7 +67,7 @@ class DeepNet(nn.Module):
     
 class WideNet(nn.Module):
     def __init__(self):
-        super(MyNet, self).__init__()
+        super(WideNet, self).__init__()
         self.fc1 = nn.Linear(in_features=input_size, out_features=392, bias=True)
         self.fc2 = nn.Linear(in_features=392, out_features=32, bias=True)
         self.fc3 = nn.Linear(in_features=32, out_features=num_classes, bias=True)
@@ -83,7 +83,7 @@ class WideNet(nn.Module):
     
 class OutNet(nn.Module):
     def __init__(self):
-        super(MyNet, self).__init__()
+        super(OutNet, self).__init__()
         self.dropout = nn.Dropout(0.2)
         self.fc1 = nn.Linear(in_features=input_size, out_features=64, bias=True)
         self.fc2 = nn.Linear(in_features=64, out_features=32, bias=True)
