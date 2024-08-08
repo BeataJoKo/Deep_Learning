@@ -15,6 +15,14 @@ from torchvision import datasets, transforms
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+#%% Create folder for models and plots
+import os
+if not os.path.exists('Model'):
+    os.makedirs('Model')
+    print('Folder created!')
+else:
+    print("The folder allready exists.")
+
 #%% Data
 transform = transforms.ToTensor()  
 train_dataset = datasets.MNIST(root ='.\spyder-env\deep_learning\Data', train=True, download=True, transform=transform) 
@@ -108,6 +116,7 @@ def plotting(train_losses, val_losses, epoches, name):
     plt.xlabel('Epoches')
     plt.ylabel('Loss')
     plt.title('Loss Curve: ' +name)
+    plt.savefig('Model/'+name+'.png')
     fig
 
 #%%
@@ -152,6 +161,7 @@ def training(cl_model, e_num, name, mom=0.0):
         accuracy = 100 * correct / total
         print(f"Test Accuracy: {accuracy:.2f}%")
         val_losses.append(loss.item())
+    torch.save(model.state_dict(), 'Model/'+name+'.pth')
     plotting(train_losses, val_losses, epoches, name)
     return model
 
