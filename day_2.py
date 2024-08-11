@@ -17,8 +17,8 @@ import matplotlib.pyplot as plt
 
 #%%
 transform = transforms.ToTensor()  
-train_dataset = datasets.MNIST(root ='.\spyder-env\deep_learning\Data', train=True, download=True, transform=transform) 
-test_dataset = datasets.MNIST(root ='.\spyder-env\deep_learning\Data', train=False, download=True, transform=transform) 
+train_dataset = datasets.MNIST(root ='.\Data', train=True, download=True, transform=transform) 
+test_dataset = datasets.MNIST(root ='.\Data', train=False, download=True, transform=transform) 
 
 train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=64, shuffle=True) 
 test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=64, shuffle=False)
@@ -37,14 +37,14 @@ class MyNet(nn.Module):
         self.fc2 = nn.Linear(in_features=64, out_features=32, bias=True)
         self.fc3 = nn.Linear(in_features=32, out_features=num_classes, bias=True)
         self.relu = nn.ReLU()
-        self.softmax = nn.Softmax(dim=1)
+        #self.softmax = nn.Softmax(dim=1)
         
     def forward(self, x):
         x = x.flatten(start_dim=1)
         #x = self.flatten(x)
         x = self.relu(self.fc1(x))
         x = self.relu(self.fc2(x))
-        x = self.softmax(self.fc3(x))
+        x = self.fc3(x)
         return x
 
 #%%
