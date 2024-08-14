@@ -69,16 +69,8 @@ folders = ['training', 'validation', 'testing']
 sub_folder = ['normal', 'pneumonia']
 for folder in folders:
     for sub in sub_folder:
-        if not os.path.exists('data/'+folder):
-            os.makedirs('data/'+folder)
-            os.makedirs('data/'+folder+'/'+sub)
-            print(folder.title()+' subfolder '+sub.title()+' created!')                
-        else:
-            print("The "+folder+" allready exists.")
-            if not os.path.exists('data/'+folder+'/'+sub):
-                os.makedirs('data/'+folder+'/'+sub)
-            else:
-                print('The '+folder.title()+' subfolder '+sub.title()+' allready exists.')
+        #exist_ok suppresses OSError if the directory already exists. If the directory doesn’t exist, it will be created. more about exist_ok: https://www.geeksforgeeks.org/python-os-makedirs-method/
+        os.makedirs('data/'+folder+'/'+sub,exist_ok=True)
 #%%
 def moveImg(X, parent):
     for e in X:
