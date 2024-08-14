@@ -44,7 +44,7 @@ for filename in os.listdir(path):
         print(filename)
         
 #%%
-"""   sort dataframe through file name and drop unnecessery column   """
+"""   sort dataframe through file name and drop unnecessery column, delete Einstein joke image before dropping id?   """
 
 df = df.sort_values('idx').reset_index(drop=True)
 df.drop(['idx'], axis=1,  inplace=True)
