@@ -6,6 +6,8 @@ Created on Wed Aug 14 14:22:32 2024
 """
 
 #%%
+import time
+import random
 import os
 import pandas as pd
 import numpy as np
@@ -94,8 +96,8 @@ moveImg(X_test, 'testing')
 class ImgDataset(torch.utils.data.Dataset): 
     def __init__(self, root_dir, data, labels, transform=None): 
         self.root_dir = root_dir
-        self.images = data 
-        self.labels = labels
+        self.images = list(data) 
+        self.labels = list(labels)
         self.transform = transform 
   
     # Defining the length of the dataset 
@@ -134,6 +136,18 @@ print('Image_0_size: ', train_dataset[0][0].shape)
 print('Label_0: ', train_dataset.labels[0])
 print('Image_0_label: ', train_dataset[0][1])
 
+#%%
+image_tensor, label = train_dataset[0]
+print(image_tensor.shape, label)
+
+#%%
+for i in range(6):
+    plt.imshow(train_dataset[i][0][0], cmap='gray', interpolation='none')
+    plt.title("Ground Truth: {}".format(train_dataset[i][1]))
+    plt.xticks([])
+    plt.yticks([])
+    plt.show()
+    
 #%%
 
 
