@@ -51,7 +51,8 @@ df = df.sort_values('idx').reset_index(drop=True)
 df.drop(['idx'], axis=1,  inplace=True)
 
 #%%
-"""   ratios for shering data to train, test and validation datasets   """
+"""   ratios for splitting data into train, test and validation datasets.
+	We prioritize a variety in the training data, therefore using 0.75 of images for training    """
 
 train_ratio = 0.75
 val_ratio = 0.15
