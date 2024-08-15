@@ -5,6 +5,7 @@ Created on Wed Aug 14 14:22:32 2024
 @author: BeButton
 """
 
+"""For data handeling we import the following liberaries and packages"""
 #%%
 import time
 import random
@@ -29,8 +30,8 @@ df = pd.DataFrame(data=None, columns=['idx', 'path', 'label'])
     
 #%% 
 """   loop through the data folder to iterate through image paths
-    split filename to get label and check 
-    if all files are of the same file format  """
+    split filename to get label and checked, if all files are of the same file format"""
+
 
 path = 'data'
 extension = []
@@ -45,27 +46,31 @@ for filename in os.listdir(path):
         print(filename)
         
 #%%
-"""   sort dataframe through file name and drop unnecessery column, delete Einstein joke image before dropping id?   """
+""" We sort the dataframe through file names and drop unnecessery columns """
 
 df = df.sort_values('idx').reset_index(drop=True)
 df.drop(['idx'], axis=1,  inplace=True)
 
 #%%
-"""   ratios for splitting data into train, test and validation datasets.
-	We prioritize a variety in the training data, therefore using 0.75 of images for training    """
+"""	Ratios for splitting data into train, test and validation datasets. We prioritize 
+	a variety in the training data so we split the ratio, In 75% of images for training, 
+	15% for validation and 10% for testing"""
 
 train_ratio = 0.75
 val_ratio = 0.15
 test_ratio = 0.10
 
 #%%
-"""   devide data to train, validation and test   """
+""" Devide data to train, validation and test.
+    For the seed, we put it to random_state = 123, 
+    so the picures are all in the same place"""
 
 X_train, X_test, y_train, y_test = train_test_split(df['path'], df['label'], test_size=1 - train_ratio, random_state=123)
 X_val, X_test, y_val, y_test = train_test_split(X_test, y_test, test_size=test_ratio/(test_ratio + val_ratio), random_state=123) 
 
 #%% Folder
-"""   creat folders and subfolders   """ 
+"""   creat folders for the training , validation and testing datasets, 
+    and subfolders that contains the classes pneumonia and normal """ 
 
 folders = ['training', 'validation', 'testing']
 sub_folder = ['normal', 'pneumonia']
