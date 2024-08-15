@@ -247,11 +247,12 @@ class SimpleCNN(nn.Module):
         super(SimpleCNN, self).__init__()
         # Define the layers
         # Convolutional layers
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=15, kernel_size=3, stride=1, padding=1)
-        self.conv2 = nn.Conv2d(in_channels=15, out_channels=30, kernel_size=5, stride=1, padding=2)
-        self.conv3 = nn.Conv2d(in_channels=30, out_channels=60, kernel_size=5, stride=1, padding=2)
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=4, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(in_channels=4, out_channels=15, kernel_size=5, stride=1, padding=2)
+        self.conv3 = nn.Conv2d(in_channels=15, out_channels=30, kernel_size=5, stride=1, padding=2)
+        self.conv4 = nn.Conv2d(in_channels=30, out_channels=60, kernel_size=3, stride=1, padding=1)
         # Fully connected layers
-        self.fc1 = nn.Linear(60 * 16 * 16, 100)  # Adjust the input size based on image dimensions after pooling
+        self.fc1 = nn.Linear(60 * 8 * 8, 100)  # Adjust the input size based on image dimensions after pooling
         self.fc2 = nn.Linear(100, 2)  # 2 classes: normal and pneumonia
         # 
         self.pool = nn.MaxPool2d(kernel_size=2)
@@ -263,6 +264,7 @@ class SimpleCNN(nn.Module):
         x = self.pool(self.relu(self.conv1(x)))
         x = self.pool(self.relu(self.conv2(x)))
         x = self.pool(self.relu(self.conv3(x)))
+        x = self.pool(self.relu(self.conv4(x)))
         x = x.view(x.size(0), -1)  # Flatten the tensor
         x = self.relu(self.fc1(x))
         x = self.dropout(x)
@@ -378,9 +380,10 @@ def save_filters(cl_model, r, filter_file):
         plt.savefig('img/'+filter_file)
 
 #%%
-save_filters(model.conv1.weight, 3, 'Convolutional_conv1_Tr.png')
-save_filters(model.conv2.weight, 6, 'Convolutional_conv2_Tr.png')
-save_filters(model.conv3.weight, 9, 'Convolutional_conv3_Tr.png')
+save_filters(model.conv1.weight, 1, 'Convolutional_conv1_Tr.png')
+save_filters(model.conv2.weight, 3, 'Convolutional_conv2_Tr.png')
+save_filters(model.conv3.weight, 6, 'Convolutional_conv3_Tr.png')
+save_filters(model.conv4.weight, 12, 'Convolutional_conv4_Tr.png')
 
 #%%
 """   https://www.geeksforgeeks.org/visualizing-feature-maps-using-pytorch/   """
@@ -425,7 +428,7 @@ for feature_map in feature_maps:
 # Plot the feature maps
 fig = plt.figure(figsize=(30, 10))
 for i in range(len(processed_feature_maps)):
-    ax = fig.add_subplot(1, 3, i + 1)
+    ax = fig.add_subplot(1, 4, i + 1)
     ax.imshow(processed_feature_maps[i], cmap='gray')
     ax.axis("off")
     plt.tight_layout()
@@ -434,11 +437,11 @@ plt.savefig('img/Convolutional_Layers_avg.png')
 
 #%%
 count = 0
-fig = plt.figure(figsize=(50, 150))
+fig = plt.figure(figsize=(60, 120))
 for i in range(0, len(feature_maps)):
     for j in range(0, len(feature_maps[i][0])):
         count += 1
-        ax = fig.add_subplot(15, 7, count)
+        ax = fig.add_subplot(14, 8, count)
         ax.imshow(feature_maps[i][0][j].detach().numpy(), cmap='gray')
         ax.axis("off")
         plt.tight_layout()
