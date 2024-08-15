@@ -246,7 +246,13 @@ class SimpleCNN(nn.Module):
         x = self.dropout(x)
         x = self.fc2(x)
         return x
-    
+	    
+    """
+    Regularization, where L1 is Lasso and L2 is Ridge. 
+    L1 forces weights closer to zero and can with a high enough lambda/punishing term. L2 on the other hand distrubutes 
+    the weights more evenly. Here different hyperparameters were tested and made our model inaccurate. In our we had the 
+    best results with L2. 
+    """
     def apply_regularization(self, layers, regularization):
         regularization_loss = 0  
         for layer in layers:
@@ -265,7 +271,7 @@ class SimpleCNN(nn.Module):
 
 # Initialize the model, loss function, and optimizer
 model = SimpleCNN()
-criterion = nn.CrossEntropyLoss()  # Appropriate for classification
+criterion = nn.CrossEntropyLoss()  # Appropriate for non-binary classification 
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # Training loop
