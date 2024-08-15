@@ -167,6 +167,12 @@ std_transform = transforms.Compose([
     transforms.ToTensor(),
 ])  
 
+""" 
+Different transformations. The parameters are not particularily finely tuned, we tried tweaking them slightly. 
+Our assumptioon is that the RandomRotation fairly important. The others, like ElasticTransform, RandomAffine and ColorJitter
+are mostly experimental. They could probably also be used (we did not do this) to produce more data/images and use those in 
+addition to the original images as part of training process. 
+"""
 aug_transform = transforms.Compose([
     transforms.RandomRotation(degrees=5),
     transforms.ElasticTransform(alpha=15.0, sigma=0.25),
