@@ -212,6 +212,9 @@ showImg(train_dataset, 6, 'Train')
 showImg(test_dataset, 6, 'Test')
 
 #%%
+"""
+We use convolutional and pooling to identify small scale features and more complex patterns. 
+"""
 class SimpleCNN(nn.Module):
     def __init__(self):
         super(SimpleCNN, self).__init__()
