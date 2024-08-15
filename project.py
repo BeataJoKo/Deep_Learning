@@ -285,3 +285,79 @@ def validate_model(model, val_loader):
     
     accuracy = 100 * correct / total
     print(f'Validation Accuracy: {accuracy:.2f}%')
+
+#%%
+def training(cl_model, num, name, reg='None', mom=0.00):
+    model = cl_model
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(model.parameters(), lr=0.005, momentum=mom)
+    train_losses = []
+    val_losses = []
+    accuracy_list = []
+    epoches = [i for i in range(num)]
+    
+    for epoch in range(num):
+        model.train()
+        train_loss_list = []
+        for data, target in train_loader:
+            optimizer.zero_grad()
+            output = model(data)
+            loss = criterion(output, target)
+            train_loss = loss
+            loss += model.apply_regularization(layers=[model.fc1], regularization=reg)    
+            loss.backward()
+            optimizer.step()
+            train_loss_list.append(train_loss.item())
+        train_loss = sum(train_loss_list) / len(train_loss_list)
+        train_losses.append(train_loss)
+        #train_losses.append(loss.item())
+        accuracy, val_loss = validating(model=model, criterion=criterion)
+        accuracy_list.append(accuracy)
+        val_losses.append(val_loss)
+        print(f"Epoch {epoch+1}/{num}, Train Loss: {train_loss}")
+    torch.save(model.state_dict(), 'model/'+name+ '_' +reg+'.pth')
+    plotting(train_losses, val_losses, epoches, accuracy_list, name)
+    return model
+
+def validating(model, criterion):
+    model.eval()  
+    correct = 0
+    total = 0
+    val_losses = []
+    with torch.no_grad():
+        for data, target in val_loader:
+            outputs = model(data)
+            loss = criterion(outputs, target)
+            _, predicted = torch.max(outputs.data, 1)
+            total += target.size(0)
+            correct += (predicted == target).sum().item()
+            val_losses.append(loss.item())
+    val_loss = sum(val_losses) / len(val_losses)
+    accuracy = 100 * correct / total
+    print(f"Validation Accuracy: {accuracy:.2f}%")
+    return accuracy, val_loss
+
+def plotting(train_losses, val_losses, epoches, accus, name):
+    fig = plt.figure(figsize=(10, 6))
+    plt.subplot(1, 2, 1)
+    plt.plot(epoches, train_losses, color='blue') #  label="Train Loss" can be as param
+    plt.scatter(epoches, val_losses, color='red') # label="Val Loss" also here
+    plt.legend(['Train Loss', 'Val Loss'], loc='upper right')
+    plt.xlabel('Epoches')
+    plt.ylabel('Loss')
+    plt.title('Loss Curve: ' +name)
+    
+    plt.subplot(1, 2, 2)
+    plt.plot(accus, label='Accuracy')
+    plt.title('Accuracy Curve')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig('img/'+name+'.png')
+    fig
+
+#%%
+model = training(SimpleCNN(), 20, 'Convolutional')
+
