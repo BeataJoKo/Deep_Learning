@@ -70,7 +70,7 @@ folders = ['training', 'validation', 'testing']
 sub_folder = ['normal', 'pneumonia']
 for folder in folders:
     for sub in sub_folder:
-        #exist_ok suppresses OSError if the directory already exists. If the directory doesn’t exist, it will be created. more about exist_ok: https://www.geeksforgeeks.org/python-os-makedirs-method/
+        """  exist_ok suppresses OS Error, if the directory already exists. If the directory does not exist, it will then be created. More about exist_ok: https://www.geeksforgeeks.org/python-os-makedirs-method/ """
         os.makedirs('data/'+folder+'/'+sub,exist_ok=True)
 #%%
 def moveImg(X, parent):
@@ -208,7 +208,7 @@ class SimpleCNN(nn.Module):
         super(SimpleCNN, self).__init__()
         # Define the layers
         # Convolutional layers
-self.conv1 = nn.Conv2d(in_channels=1, out_channels=10, kernel_size=3, stride=1, padding=1)
+	self.conv1 = nn.Conv2d(in_channels=1, out_channels=10, kernel_size=3, stride=1, padding=1)
         self.conv2 = nn.Conv2d(in_channels=10, out_channels=20, kernel_size=5, stride=1, padding=2)
         self.conv3 = nn.Conv2d(in_channels=20, out_channels=40, kernel_size=5, stride=1, padding=2)
         # Fully connected layers
