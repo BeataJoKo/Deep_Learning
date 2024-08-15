@@ -9,6 +9,9 @@ Created on Wed Aug 14 14:22:32 2024
     Jakob Kolberg
     Melanie Wittrup Berg
     Tew Rhui Ren
+""" 
+We have went through a highly iterative process. It's really hard for us to describe/pinpoint who worked on what. 
+Please assume we worked equally on all parts.
 """
 
 """For data handeling we import the following liberaries and packages"""
