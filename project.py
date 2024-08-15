@@ -17,7 +17,8 @@ from PIL import Image
 import torch
 import torch.nn as nn 
 import torch.optim as optim
-from torchvision import datasets, transforms 
+from torchvision import transforms 
+from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
 
 #%% 
