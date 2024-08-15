@@ -355,5 +355,86 @@ def plotting(train_losses, val_losses, epoches, accus, name):
     fig
 
 #%%
-model = training(SimpleCNN(), 20, 'Convolutional')
+model = training(SimpleCNN(), 40, 'Convolutional_15conv_40e_0.9mom', reg='L2', mom=0.9) 
+
+#%%
+def save_filters(cl_model, r, filter_file):
+    #plt.figure(figsize=(10, 6))
+    for i, filter in enumerate(cl_model):
+        plt.subplot(r, 5, i + 1)
+        plt.imshow(filter[0, :, :].cpu().detach(), cmap='gray')
+        plt.axis('off')
+        #plt.subplots_adjust(hspace=-0.2, wspace=0.1)
+        #plt.tight_layout()
+        plt.savefig('img/'+filter_file)
+
+#%%
+save_filters(model.conv1.weight, 3, 'Convolutional_conv1_Tr.png')
+save_filters(model.conv2.weight, 6, 'Convolutional_conv2_Tr.png')
+save_filters(model.conv3.weight, 9, 'Convolutional_conv3_Tr.png')
+
+#%%
+"""   https://www.geeksforgeeks.org/visualizing-feature-maps-using-pytorch/   """
+
+total_conv_layers = 0
+conv_weights = []
+conv_layers = []
+
+for module in model.children():
+    if isinstance(module, nn.Conv2d):
+        total_conv_layers += 1
+        conv_weights.append(module.weight)
+        conv_layers.append(module)
+
+print(f"Total convolution layers: {total_conv_layers}")
+
+#%%
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+pretrained_model = model.to(device)
+ 
+# Preprocess the image and move it to GPU
+img_batch = next(iter(val_loader))[0]
+input_image = img_batch[0].unsqueeze(0)  # Add a batch dimension
+input_image = input_image.to(device)
+
+feature_maps = []  # List to store feature maps
+layer_names = []  # List to store layer names
+for layer in conv_layers:
+    input_image = layer(input_image)
+    feature_maps.append(input_image)
+    layer_names.append(str(layer))
+
+#%%
+# Process and visualize feature maps
+processed_feature_maps = []  # List to store processed feature maps
+for feature_map in feature_maps:
+    feature_map = feature_map.squeeze(0)  # Remove the batch dimension
+    mean_feature_map = torch.sum(feature_map, 0) / feature_map.shape[0]  # Compute mean across channels
+    processed_feature_maps.append(mean_feature_map.data.cpu().numpy())
+
+#%%
+# Plot the feature maps
+fig = plt.figure(figsize=(30, 10))
+for i in range(len(processed_feature_maps)):
+    ax = fig.add_subplot(1, 3, i + 1)
+    ax.imshow(processed_feature_maps[i], cmap='gray')
+    ax.axis("off")
+    plt.tight_layout()
+    ax.set_title(layer_names[i].split('(')[0], fontsize=30)
+plt.savefig('img/Convolutional_Layers_avg.png')
+
+#%%
+count = 0
+fig = plt.figure(figsize=(50, 150))
+for i in range(0, len(feature_maps)):
+    for j in range(0, len(feature_maps[i][0])):
+        count += 1
+        ax = fig.add_subplot(15, 7, count)
+        ax.imshow(feature_maps[i][0][j].detach().numpy(), cmap='gray')
+        ax.axis("off")
+        plt.tight_layout()
+        print(i, j)
+plt.savefig('img/Convolutional_Layers_all.png')
+
+#%%
 
