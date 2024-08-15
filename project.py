@@ -224,10 +224,10 @@ os.makedirs('model', exist_ok=True)
 
 #%%
 #We choose how many pictures we wanna see from each folder.
-showImg(train_dataset, 6, 'Train')
-showImg(val_dataset, 6, 'Val')
-showImg(train_dataset, 6, 'Train')
-showImg(test_dataset, 6, 'Test')
+showImg(train_dataset, 2, 'Train')
+showImg(val_dataset, 2, 'Val')
+showImg(train_dataset, 2, 'Train')
+showImg(test_dataset, 2, 'Test')
 
 #%%
 """
