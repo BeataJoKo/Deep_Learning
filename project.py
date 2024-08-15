@@ -53,8 +53,8 @@ df.drop(['idx'], axis=1,  inplace=True)
 
 #%%
 """	Ratios for splitting data into train, test and validation datasets. We prioritize 
-	a variety in the training data so we split the ratio, In 75% of images for training, 
-	15% for validation and 10% for testing"""
+	a variety in the training data so we split the ratio, In 75% of images for training since we need more testing, 
+ 	compared to validation and testing, 15% for validation and 10% for testing"""
 
 train_ratio = 0.75
 val_ratio = 0.15
