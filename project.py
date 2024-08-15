@@ -287,41 +287,6 @@ model = SimpleCNN()
 criterion = nn.CrossEntropyLoss()  # Appropriate for non-binary classification 
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-# Training loop
-def train_model(model, train_loader, val_loader, num_epochs=10):
-    for epoch in range(num_epochs):
-        model.train()
-        running_loss = 0.0
-        
-        for images, labels in train_loader:
-            optimizer.zero_grad()
-            outputs = model(images)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-            
-            running_loss += loss.item() * images.size(0)
-        
-        epoch_loss = running_loss / len(train_loader.dataset)
-        print(f'Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss:.4f}')
-        
-        # Validate
-        validate_model(model, val_loader)
-
-def validate_model(model, val_loader):
-    model.eval()
-    correct = 0
-    total = 0
-    with torch.no_grad():
-        for images, labels in val_loader:
-            outputs = model(images)
-            _, predicted = torch.max(outputs, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-    
-    accuracy = 100 * correct / total
-    print(f'Validation Accuracy: {accuracy:.2f}%')
-
 #%%
 def training(cl_model, num, name, reg='None', mom=0.00):
     model = cl_model
