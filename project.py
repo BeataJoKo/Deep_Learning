@@ -123,7 +123,9 @@ class ImgDataset(Dataset):
         return image, label
                 
 #%%
-"""   https://discuss.pytorch.org/t/how-to-resize-and-pad-in-a-torchvision-transforms-compose/71850/5   """
+"""   https://discuss.pytorch.org/t/how-to-resize-and-pad-in-a-torchvision-transforms-compose/71850/5   
+	To avoid a potential false classification based on distortion of the images, we decide to
+ 	preserve the original ratio and fill the square input by adding padding to the image border"""
 
 class SquarePad:
 	def __call__(self, image):
@@ -139,7 +141,12 @@ batch_size = 32
 img_size = (128, 128)
 
 #%%
-"""   https://pytorch.org/vision/stable/transforms.html   """
+"""   https://pytorch.org/vision/stable/transforms.html   
+	To add more variation into the data, we transform the data. The transformation should
+ 	simulate naturally occcuring noise. After we look at the data and observe rotation,
+  	different perspepectives on the chest, and variation in brightness and contrast,
+   	we aim to replicate this noise with our transformation. We also decide to use
+    	greyscale, as the original X-ray image is recorded in grayscale"""
 
 std_transform = transforms.Compose([
     transforms.Grayscale(),
