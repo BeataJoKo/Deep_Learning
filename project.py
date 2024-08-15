@@ -70,7 +70,7 @@ folders = ['training', 'validation', 'testing']
 sub_folder = ['normal', 'pneumonia']
 for folder in folders:
     for sub in sub_folder:
-        """  exist_ok suppresses OS Error, if the directory already exists. If the directory does not exist, it will then be created. More about exist_ok: https://www.geeksforgeeks.org/python-os-makedirs-method/ """
+# exist_ok suppresses OS Error, if the directory already exists. If the directory does not exist, a new diectory will be created. More about exist_ok: https://www.geeksforgeeks.org/python-os-makedirs-method/
         os.makedirs('data/'+folder+'/'+sub,exist_ok=True)
 #%%
 def moveImg(X, parent):
@@ -197,6 +197,7 @@ os.makedirs('img', exist_ok=True)
 os.makedirs('model', exist_ok=True)
 
 #%%
+#We choose how many pictures we wanna see from each folder.
 showImg(train_dataset, 6, 'Train')
 showImg(val_dataset, 6, 'Val')
 showImg(train_dataset, 6, 'Train')
