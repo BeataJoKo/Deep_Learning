@@ -27,11 +27,12 @@ class group_17(nn.Module):
         super(group_17, self).__init__()
         # Define the layers
         # Convolutional layers
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=15, kernel_size=3, stride=1, padding=1)
-        self.conv2 = nn.Conv2d(in_channels=15, out_channels=30, kernel_size=5, stride=1, padding=2)
-        self.conv3 = nn.Conv2d(in_channels=30, out_channels=60, kernel_size=5, stride=1, padding=2)
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=4, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(in_channels=4, out_channels=15, kernel_size=5, stride=1, padding=2)
+        self.conv3 = nn.Conv2d(in_channels=15, out_channels=30, kernel_size=5, stride=1, padding=2)
+        self.conv4 = nn.Conv2d(in_channels=30, out_channels=60, kernel_size=3, stride=1, padding=1)
         # Fully connected layers
-        self.fc1 = nn.Linear(60 * 16 * 16, 100)  # Adjust the input size based on image dimensions after pooling
+        self.fc1 = nn.Linear(60 * 8 * 8, 100)  # Adjust the input size based on image dimensions after pooling
         self.fc2 = nn.Linear(100, 2)  # 2 classes: normal and pneumonia
         # 
         self.pool = nn.MaxPool2d(kernel_size=2)
@@ -43,6 +44,7 @@ class group_17(nn.Module):
         x = self.pool(self.relu(self.conv1(x)))
         x = self.pool(self.relu(self.conv2(x)))
         x = self.pool(self.relu(self.conv3(x)))
+        x = self.pool(self.relu(self.conv4(x)))
         x = x.view(x.size(0), -1)  # Flatten the tensor
         x = self.relu(self.fc1(x))
         x = self.dropout(x)
