@@ -85,7 +85,6 @@ moveImg(X_val, 'validation')
 moveImg(X_test, 'testing')
 
 #%%
-#%%
 class ImgDataset(Dataset): 
     # Inicialization
     def __init__(self, df_x, df_y, root_dir=None, transform=None): 
@@ -116,30 +115,53 @@ class ImgDataset(Dataset):
     # Defining the method to get an item from the dataset 
     def __getitem__(self, index): 
         image = self.data[index]
-        label = torch.tensor(self.labels[index])         
+        label = torch.tensor(self.labels[index])
         return image, label
+                
+#%%
+class SquarePad:
+	def __call__(self, image):
+		w, h = image.size
+		max_wh = np.max([w, h])
+		hp = int((max_wh - w) / 2)
+		vp = int((max_wh - h) / 2)
+		padding = (hp, vp, hp, vp)
+		return transforms.functional.pad(image, padding, 0, 'constant')
 
 #%%
 batch_size = 32
-transform = transforms.Compose([
+std_transform = transforms.Compose([
     transforms.Grayscale(),
+    SquarePad(),
     transforms.Resize((256, 256)),
+    transforms.CenterCrop((256, 256)),
     transforms.ToTensor(),
 ])  
 
-train_dataset = ImgDataset(X_train, y_train, './data/training', transform)
-val_dataset = ImgDataset(X_val, y_val, './data/validation', transform)
-test_dataset = ImgDataset(X_test, y_test, './data/testing', transform)
+aug_transform = transforms.Compose([
+    transforms.RandomRotation(degrees=5),
+    transforms.ElasticTransform(alpha=15.0, sigma=0.25),
+    transforms.RandomAffine(degrees=5, translate=(0.1, 0.1)),
+    transforms.ColorJitter(brightness=0.25, contrast=0.25, saturation=0.25, hue=0.25),
+    transforms.Grayscale(),
+    SquarePad(),
+    transforms.Resize((256, 256)),
+    transforms.CenterCrop((256, 256)),
+    transforms.ToTensor(),
+])  
+
+train_dataset = ImgDataset(X_train, y_train, './data/training', aug_transform)
+val_dataset = ImgDataset(X_val, y_val, './data/validation', std_transform)
+test_dataset = ImgDataset(X_test, y_test, './data/testing', std_transform)
 
 train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)  
 val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False) 
 test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
-
 #%%
 print('Test: ', len(test_dataset))
 print('Image_0_name: ', test_dataset.names[0])
-print('Image_0_size: ', test_dataset.data[0].shape)
+print('Image_0_size: ', test_dataset.data[0].size(1), 'x', test_dataset.data[0].size(2))
 print('Image_0_label: ', test_dataset.labels[0])
 print('Object_0: ', test_dataset[0])
 
@@ -153,17 +175,20 @@ batch_idx, (example_data, example_targets) = next(examples)
 print(example_data.shape)
 
 #%%
-for i in range(6):
-    plt.imshow(train_dataset.data[i][0], cmap='gray', interpolation='none')
-    plt.title("Ground Truth: {}".format(train_dataset.names[i]))
-    plt.xticks([])
-    plt.yticks([])
-    plt.show()
+def showImg(data_set, num, title):
+    for i in random.choices(range(0, len(data_set)-1), k=num):
+        plt.imshow(data_set.data[i][0], cmap='gray', interpolation='none')
+        plt.title("{} - Truth: {}".format(title, data_set.names[i]))
+        plt.xticks([])
+        plt.yticks([])
+        plt.show()
     
 #%%
-random_idx = random.randint(0, len(train_dataset) - 1) 
+showImg(train_dataset, 6, 'Train')
+showImg(val_dataset, 6, 'Val')
+showImg(train_dataset, 6, 'Train')
+showImg(test_dataset, 6, 'Test')
 
-plt.imshow(train_dataset.data[random_idx][0], cmap='gray', interpolation='none') 
 plt.xticks([])
 plt.yticks([])
 plt.show()
