@@ -264,7 +264,7 @@ class SimpleCNN(nn.Module):
     Regularization, where L1 is Lasso and L2 is Ridge. 
     L1 forces weights closer to zero and can with a high enough lambda/punishing term. L2 on the other hand distrubutes 
     the weights more evenly. Here different hyperparameters were tested and made our model inaccurate. In our we had the 
-    best results with L2. 
+    best results with L2. The training class assumes no regularization if none are specified in the function call. 
     """
     def apply_regularization(self, layers, regularization):
         regularization_loss = 0  
