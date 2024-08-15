@@ -282,11 +282,7 @@ class SimpleCNN(nn.Module):
                 regularization_loss += L_reg_layer
             return regularization_loss
 
- """
- Due to the complexity of our data and the deep and non-linear network architecture, 
- Adam (Adaptive Moment Estimation) is the optimizer.Adam handles the sparse gradient and aids 
- in adjusting the learning rate,which speeds up convergence.
- """
+ 
 # Initialize the model, loss function, and optimizer
 model = SimpleCNN()
 criterion = nn.CrossEntropyLoss()  # Appropriate for non-binary classification 
@@ -295,7 +291,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 #%%
 def training(cl_model, num, name, reg='None', mom=0.00):
     model = cl_model
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss() # Appropriate for non-binary classification 
     optimizer = optim.SGD(model.parameters(), lr=0.005, momentum=mom)
     train_losses = []
     val_losses = []
