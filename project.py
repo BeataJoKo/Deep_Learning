@@ -79,6 +79,8 @@ for folder in folders:
 # exist_ok suppresses OS Error, if the directory already exists. If the directory does not exist, a new diectory will be created. More about exist_ok: https://www.geeksforgeeks.org/python-os-makedirs-method/
         os.makedirs('data/'+folder+'/'+sub,exist_ok=True)
 #%%
+"""The images gets moved to the appropriate folders"""
+
 def moveImg(X, parent):
     for e in X:
         if 'normal' in e:
@@ -92,6 +94,10 @@ moveImg(X_val, 'validation')
 moveImg(X_test, 'testing')
 
 #%%
+
+""" By using Pytorch's Datasets, the image processing, loading and applied transformations gets handled, 
+and returnes the images with the corresponding labels"""
+
 class ImgDataset(Dataset): 
     # Inicialization
     def __init__(self, df_x, df_y, root_dir=None, transform=None): 
@@ -129,8 +135,9 @@ class ImgDataset(Dataset):
                 
 #%%
 """   https://discuss.pytorch.org/t/how-to-resize-and-pad-in-a-torchvision-transforms-compose/71850/5   
+	class Squarepad makes sure that the images are padded to square dimentions before the resizing.	
 	To avoid a potential false classification based on distortion of the images, we decide to
- 	preserve the original ratio and fill the square input by adding padding to the image border"""
+ 	preserve the original ratio and fill the square input by adding padding to the image border."""
 
 class SquarePad:
 	def __call__(self, image):
