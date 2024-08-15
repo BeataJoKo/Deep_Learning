@@ -100,7 +100,7 @@ class ImgDataset(Dataset):
             self.readImages()
         
     def readImages(self):
-        for i in range(0, len(self.images) - 1):
+        for i in range(0, len(self.images)):
             img_dir = os.path.join(self.root_dir, self.names[i])
             image_path = os.path.join(img_dir, self.images[i]) 
             image = Image.open(image_path)
@@ -111,15 +111,19 @@ class ImgDataset(Dataset):
   
     # Defining the length of the dataset 
     def __len__(self): 
-        return len(self.images) 
+        return len(self.data) 
   
     # Defining the method to get an item from the dataset 
     def __getitem__(self, index): 
         image = self.data[index]
-        label = torch.tensor(self.labels[index])
+        label = self.labels[index]
+        label = torch.tensor(label)
+        
         return image, label
                 
 #%%
+"""   https://discuss.pytorch.org/t/how-to-resize-and-pad-in-a-torchvision-transforms-compose/71850/5   """
+
 class SquarePad:
 	def __call__(self, image):
 		w, h = image.size
@@ -131,11 +135,15 @@ class SquarePad:
 
 #%%
 batch_size = 32
+img_size = (128, 128)
+
+#%%
+"""   https://pytorch.org/vision/stable/transforms.html   """
+
 std_transform = transforms.Compose([
     transforms.Grayscale(),
     SquarePad(),
-    transforms.Resize((256, 256)),
-    transforms.CenterCrop((256, 256)),
+    transforms.Resize(img_size),
     transforms.ToTensor(),
 ])  
 
@@ -146,10 +154,9 @@ aug_transform = transforms.Compose([
     transforms.ColorJitter(brightness=0.25, contrast=0.25, saturation=0.25, hue=0.25),
     transforms.Grayscale(),
     SquarePad(),
-    transforms.Resize((256, 256)),
-    transforms.CenterCrop((256, 256)),
+    transforms.Resize(img_size),
     transforms.ToTensor(),
-])  
+]) 
 
 train_dataset = ImgDataset(X_train, y_train, './data/training', aug_transform)
 val_dataset = ImgDataset(X_val, y_val, './data/validation', std_transform)
@@ -182,55 +189,62 @@ def showImg(data_set, num, title):
         plt.title("{} - Truth: {}".format(title, data_set.names[i]))
         plt.xticks([])
         plt.yticks([])
+        plt.savefig('img/'+title+'_'+str(i)+'_'+data_set.names[i]+'.png')
         plt.show()
     
+#%%
+os.makedirs('img', exist_ok=True)
+os.makedirs('model', exist_ok=True)
+
 #%%
 showImg(train_dataset, 6, 'Train')
 showImg(val_dataset, 6, 'Val')
 showImg(train_dataset, 6, 'Train')
 showImg(test_dataset, 6, 'Test')
 
-plt.xticks([])
-plt.yticks([])
-plt.show()
-
-
 #%%
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-
 class SimpleCNN(nn.Module):
     def __init__(self):
         super(SimpleCNN, self).__init__()
         # Define the layers
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, stride=1, padding=1)
-        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=1, padding=1)
-        self.conv3 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=1)
-        
-        # Max pooling layer
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-        
+        # Convolutional layers
+self.conv1 = nn.Conv2d(in_channels=1, out_channels=10, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(in_channels=10, out_channels=20, kernel_size=5, stride=1, padding=2)
+        self.conv3 = nn.Conv2d(in_channels=20, out_channels=40, kernel_size=5, stride=1, padding=2)
         # Fully connected layers
-        self.fc1 = nn.Linear(128 * 128 * 128, 512)  # Adjust the input size based on image dimensions after pooling
-        self.fc2 = nn.Linear(512, 2)  # 2 classes: normal and pneumonia
+        self.fc1 = nn.Linear(40 * 16 * 16, 40)  # Adjust the input size based on image dimensions after pooling
+        self.fc2 = nn.Linear(40, 2)  # 2 classes: normal and pneumonia
+        # 
+        self.pool = nn.MaxPool2d(kernel_size=2)
+        self.relu = nn.ReLU()
+        self.dropout = nn.Dropout(0.2)
 
     def forward(self, x):
         # Forward pass through the network
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = self.pool(F.relu(self.conv3(x)))
+        x = self.pool(self.relu(self.conv1(x)))
+        x = self.pool(self.relu(self.conv2(x)))
+        x = self.pool(self.relu(self.conv3(x)))
         x = x.view(x.size(0), -1)  # Flatten the tensor
-        x = F.relu(self.fc1(x))
+        x = self.relu(self.fc1(x))
+        x = self.dropout(x)
         x = self.fc2(x)
         return x
-
-
-
-
-
-#%%
-import torch.optim as optim
+    
+    def apply_regularization(self, layers, regularization):
+        regularization_loss = 0  
+        for layer in layers:
+            if hasattr(layer, 'weight'):
+                if regularization == "L1":
+                    p = 1
+                    L_lambda = 0.001
+                elif regularization == "L2":
+                    p = 2
+                    L_lambda = 0.005
+                else:
+                    return 0
+                L_reg_layer = L_lambda * torch.norm(layer.weight, p=p)
+                regularization_loss += L_reg_layer
+            return regularization_loss
 
 # Initialize the model, loss function, and optimizer
 model = SimpleCNN()
