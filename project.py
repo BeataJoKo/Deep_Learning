@@ -238,12 +238,12 @@ class SimpleCNN(nn.Module):
         super(SimpleCNN, self).__init__()
         # Define the layers
         # Convolutional layers
-	self.conv1 = nn.Conv2d(in_channels=1, out_channels=10, kernel_size=3, stride=1, padding=1)
-        self.conv2 = nn.Conv2d(in_channels=10, out_channels=20, kernel_size=5, stride=1, padding=2)
-        self.conv3 = nn.Conv2d(in_channels=20, out_channels=40, kernel_size=5, stride=1, padding=2)
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=15, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(in_channels=15, out_channels=30, kernel_size=5, stride=1, padding=2)
+        self.conv3 = nn.Conv2d(in_channels=30, out_channels=60, kernel_size=5, stride=1, padding=2)
         # Fully connected layers
-        self.fc1 = nn.Linear(40 * 16 * 16, 40)  # Adjust the input size based on image dimensions after pooling
-        self.fc2 = nn.Linear(40, 2)  # 2 classes: normal and pneumonia
+        self.fc1 = nn.Linear(60 * 16 * 16, 100)  # Adjust the input size based on image dimensions after pooling
+        self.fc2 = nn.Linear(100, 2)  # 2 classes: normal and pneumonia
         # 
         self.pool = nn.MaxPool2d(kernel_size=2)
         self.relu = nn.ReLU()
