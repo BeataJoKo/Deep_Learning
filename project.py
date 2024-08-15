@@ -2,7 +2,13 @@
 """
 Created on Wed Aug 14 14:22:32 2024
 
-@author: BeButton
+@author: Group 17
+    Anas Byriel Othman
+    Beata Joanna Morawska
+    Ejvind Heebøll Brandt
+    Jakob Kolberg
+    Melanie Wittrup Berg
+    Tew Rhui Ren
 """
 
 """For data handeling we import the following liberaries and packages"""
